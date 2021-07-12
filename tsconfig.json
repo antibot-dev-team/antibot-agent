@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "module": "commonjs",
+    "target": "es5",
+    "allowJs": true
+  }
+}
