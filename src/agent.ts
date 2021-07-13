@@ -1,3 +1,12 @@
+type AntibotResponse = {
+  status: string;
+  data: string;
+}
+
+type AntibotRequest = {
+  data: string;
+}
+
 class Agent {
   private readonly _endpoint: string;
 
@@ -14,7 +23,7 @@ class Agent {
    */
   collectData(): void {
     // TODO: Collect data from the browser somehow
-    const body = {'data': 'anything'};
+    const body: AntibotRequest = {'data': 'anything'};
 
     const options = {
       method: 'POST',
@@ -25,8 +34,10 @@ class Agent {
     };
 
     fetch(this._endpoint, options).then(function(response: Response) {
-      // TODO: Process response somehow
-      console.log(response);
+      return response.json();
+    }).then(function(data: AntibotResponse) {
+      // TODO: Handle data properly
+      console.log(data);
     });
   }
 
