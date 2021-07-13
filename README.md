@@ -21,5 +21,5 @@ http://localhost:8080
 ```
 You should see in the console:  
 ```json
-{status: "success", data: "anything"}
+{"status": "success", "data": "anything"}
 ```
