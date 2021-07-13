@@ -11,11 +11,15 @@ make build
 ```
 
 ## Usage
-Run:  
+Run antibot backend, then run:  
 ```bash
 make run
 ```
-Open (browser dev console):  
+Open in your browser (with dev console):  
 ```
 http://localhost:8080
+```
+You should see in the console:  
+```json
+{status: "success", data: "anything"}
 ```
