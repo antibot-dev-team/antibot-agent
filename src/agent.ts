@@ -2,15 +2,15 @@ import {Config, Endpoints} from './config';
 import Properties, {ClientProperties} from './properties';
 
 enum ResponseStatus {
-  Valid = 'VALID',
-  Invalid = 'INVALID'
+  Valid = 'VALID_CLIENT',
+  Invalid = 'INVALID_CLIENT'
 }
 
-type AntibotResponse = {
-  status: string;
+type AnalyzeResponse = {
+  decision: string;
 }
 
-type AntibotRequest = {
+type AnalyzeRequest = {
   ua: string;
   properties: ClientProperties;
 }
@@ -29,17 +29,23 @@ class Agent {
    * Handle response from the backend
    * @param response response from the backend
    */
-  handleResponse(response: AntibotResponse): void {
-    if (response.status === ResponseStatus.Invalid) {
-      // TODO: Handle bot or bad client correctly
-      alert('You are bot!');
+  handleResponse(response: AnalyzeResponse): void {
+    if (response.decision === ResponseStatus.Invalid) {
+      // TODO/Brainstorm: Handle bots or bad clients correctly
+      //  Questions here:
+      //  1. What should we do if we know that the client is a bot? Captcha? Redirect? New page? Iframe?
+      window.alert('You are bot!');
     }
   }
 
   /**
    * Prepare body with client's data
    */
-  prepareRequestBody(): AntibotRequest {
+  prepareRequestBody(): AnalyzeRequest {
+    // TODO/Brainstorm: Think about request format
+    //  Questions here:
+    //  1. Which parameters are required to correctly detect bots? UA is enough?
+    //  2. Which window.*, document.* objects we need?
     return {
       ua: navigator.userAgent,
       properties: this._propertiesCollector.collect()
@@ -62,7 +68,7 @@ class Agent {
 
     fetch(Endpoints.analyze, options).then(function (response: Response) {
       return response.json();
-    }.bind(this)).then(function (response: AntibotResponse) {
+    }.bind(this)).then(function (response: AnalyzeResponse) {
       this.handleResponse(response);
     }.bind(this));
   }
