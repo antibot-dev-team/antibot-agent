@@ -1,29 +1,62 @@
-type AntibotResponse = {
-  status: string;
-  data: string;
+import {Config, Endpoints} from './config';
+import Properties, {ClientProperties} from './properties';
+
+enum ResponseStatus {
+  Valid = 'VALID_CLIENT',
+  Invalid = 'INVALID_CLIENT'
 }
 
-type AntibotRequest = {
-  data: string;
+type AnalyzeResponse = {
+  decision: string;
+}
+
+type AnalyzeRequest = {
+  ua: string;
+  properties: ClientProperties;
 }
 
 class Agent {
-  private readonly _endpoint: string;
+  private readonly _propertiesCollector: Properties;
 
   /**
    * Initialize template Agent structure
-   * @param endpoint antibot backend endpoint
    */
-  constructor(endpoint: string) {
-    this._endpoint = endpoint;
+  constructor() {
+    this._propertiesCollector = new Properties();
   }
 
   /**
-   * Collect data from the client (template)
+   * Handle response from the backend
+   * @param response response from the backend
    */
-  collectData(): void {
-    // TODO: Collect data from the browser somehow
-    const body: AntibotRequest = {'data': 'anything'};
+  handleResponse(response: AnalyzeResponse): void {
+    if (response.decision === ResponseStatus.Invalid) {
+      // TODO/Brainstorm: Handle bots or bad clients correctly
+      //  Questions here:
+      //  1. What should we do if we know that the client is a bot? Captcha? Redirect? New page? Iframe?
+      window.alert('You are bot!');
+    }
+  }
+
+  /**
+   * Prepare body with client's data
+   */
+  prepareRequestBody(): AnalyzeRequest {
+    // TODO/Brainstorm: Think about request format
+    //  Questions here:
+    //  1. Which parameters are required to correctly detect bots? UA is enough?
+    //  2. Which window.*, document.* objects we need?
+    return {
+      ua: navigator.userAgent,
+      properties: this._propertiesCollector.collect()
+    };
+  }
+
+  /**
+   * Send request with client's data and handle response
+   */
+  sendData(): void {
+    const body = this.prepareRequestBody();
 
     const options = {
       method: 'POST',
@@ -33,21 +66,20 @@ class Agent {
       }
     };
 
-    fetch(this._endpoint, options).then(function(response: Response) {
+    fetch(Endpoints.analyze, options).then(function (response: Response) {
       return response.json();
-    }).then(function(data: AntibotResponse) {
-      // TODO: Handle data properly
-      console.log(data);
-    });
+    }.bind(this)).then(function (response: AnalyzeResponse) {
+      this.handleResponse(response);
+    }.bind(this));
   }
 
   /**
-   * Send requests with data to the backend regularly
+   * Send requests with client's data to the backend regularly
    * @param sendInterval interval used to send data
    */
-  initRegularSend(sendInterval = 5000): void {
-    window.setInterval(function() {
-      this.collectData();
+  initRegularSend(sendInterval = Config.sendInterval): void {
+    window.setInterval(function () {
+      this.sendData();
     }.bind(this), sendInterval);
   }
 }
