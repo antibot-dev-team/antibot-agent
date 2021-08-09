@@ -2,6 +2,7 @@ export type ClientProperties = {
   languages: readonly string[]
   plugins: string[]
   custom_window: string[]
+  ua: string
   // TODO: Add more checks: window size, navigator properties, webdriver, etc. ...
 }
 
@@ -78,11 +79,19 @@ class Properties {
     return navigator.languages;
   }
 
+  /**
+   * Return user agent
+   */
+  getUserAgent(): string {
+    return navigator.userAgent;
+  }
+
   collect(): ClientProperties {
     return {
       languages: this.getLanguages(),
       plugins: this.getPlugins(),
       custom_window: this.getWindowCustomProperties(),
+      ua: this.getUserAgent(),
     };
   }
 }
