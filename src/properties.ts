@@ -2,7 +2,8 @@ export type ClientProperties = {
   languages: readonly string[]
   plugins: string[]
   custom_window: string[]
-  // TODO: Add more checks: window size, navigator properties, webdriver, etc. ...
+  webdriver: boolean
+  // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
 // TODO/Brainstorm: Think about required custom properties
@@ -78,11 +79,19 @@ class Properties {
     return navigator.languages;
   }
 
+  /**
+   * Return value of webdriver property.
+   */
+  getWebdriver(): boolean {
+    return navigator.webdriver;
+  }
+
   collect(): ClientProperties {
     return {
       languages: this.getLanguages(),
       plugins: this.getPlugins(),
       custom_window: this.getWindowCustomProperties(),
+      webdriver: this.getWebdriver(),
     };
   }
 }
