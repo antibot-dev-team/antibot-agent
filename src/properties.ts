@@ -4,6 +4,7 @@ export type ClientProperties = {
   custom_window: string[]
   ua: string
   webdriver: boolean
+  has_window_chrome: boolean
   // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
@@ -94,6 +95,13 @@ class Properties {
     return navigator.webdriver;
   }
 
+  /**
+   * Return true if window.chrome is present.
+   */
+  hasWindowChrome(): boolean {
+    return window.hasOwnProperty('chrome');
+  }
+
   collect(): ClientProperties {
     return {
       languages: this.getLanguages(),
@@ -101,6 +109,7 @@ class Properties {
       custom_window: this.getWindowCustomProperties(),
       ua: this.getUserAgent(),
       webdriver: this.getWebdriver(),
+      has_window_chrome: this.hasWindowChrome(),
     };
   }
 }
