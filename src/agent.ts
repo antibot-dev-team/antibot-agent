@@ -11,7 +11,6 @@ type AnalyzeResponse = {
 }
 
 type AnalyzeRequest = {
-  ua: string;
   properties: ClientProperties;
 }
 
@@ -47,7 +46,6 @@ class Agent {
     //  1. Which parameters are required to correctly detect bots? UA is enough?
     //  2. Which window.*, document.* objects we need?
     return {
-      ua: navigator.userAgent,
       properties: this._propertiesCollector.collect()
     };
   }
