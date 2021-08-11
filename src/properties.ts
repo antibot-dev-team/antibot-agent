@@ -3,7 +3,8 @@ export type ClientProperties = {
   plugins: string[]
   custom_window: string[]
   ua: string
-  // TODO: Add more checks: window size, navigator properties, webdriver, etc. ...
+  webdriver: boolean
+  // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
 // TODO/Brainstorm: Think about required custom properties
@@ -85,6 +86,13 @@ class Properties {
   getUserAgent(): string {
     return navigator.userAgent;
   }
+    
+  /**
+   * Return value of webdriver property.
+   */
+  getWebdriver(): boolean {
+    return navigator.webdriver;
+  }
 
   collect(): ClientProperties {
     return {
@@ -92,6 +100,7 @@ class Properties {
       plugins: this.getPlugins(),
       custom_window: this.getWindowCustomProperties(),
       ua: this.getUserAgent(),
+      webdriver: this.getWebdriver(),
     };
   }
 }
