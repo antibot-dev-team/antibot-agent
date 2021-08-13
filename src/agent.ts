@@ -40,35 +40,39 @@ class Agent {
   /**
    * Prepare body with client's data
    */
-  prepareRequestBody(): AnalyzeRequest {
+  prepareRequestBody(): Promise<AnalyzeRequest> {
     // TODO/Brainstorm: Think about request format
     //  Questions here:
     //  1. Which parameters are required to correctly detect bots? UA is enough?
     //  2. Which window.*, document.* objects we need?
-    return {
-      properties: this._propertiesCollector.collect()
-    };
+
+    return this._propertiesCollector.collect().then(collected_properties => {
+      return {
+        properties: collected_properties
+      };
+    });
   }
 
   /**
    * Send request with client's data and handle response
    */
   sendData(): void {
-    const body = this.prepareRequestBody();
-
-    const options = {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    fetch(Endpoints.analyze, options).then(function (response: Response) {
-      return response.json();
-    }.bind(this)).then(function (response: AnalyzeResponse) {
-      this.handleResponse(response);
-    }.bind(this));
+    this.prepareRequestBody().then(body => {
+      return {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      };
+    }).then(options =>
+      fetch(Endpoints.analyze, options)
+        .then(function (response: Response) {
+          return response.json();
+        }.bind(this))
+        .then(function (response: AnalyzeResponse) {
+          this.handleResponse(response);
+        }.bind(this)));
   }
 
   /**

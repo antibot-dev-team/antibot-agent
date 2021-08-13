@@ -5,6 +5,7 @@ export type ClientProperties = {
   ua: string
   webdriver: boolean
   has_window_chrome: boolean
+  inconsistent_permissions: boolean
   // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
@@ -87,7 +88,7 @@ class Properties {
   getUserAgent(): string {
     return navigator.userAgent;
   }
-    
+
   /**
    * Return value of webdriver property.
    */
@@ -102,15 +103,31 @@ class Properties {
     return window.hasOwnProperty('chrome');
   }
 
-  collect(): ClientProperties {
-    return {
-      languages: this.getLanguages(),
-      plugins: this.getPlugins(),
-      custom_window: this.getWindowCustomProperties(),
-      ua: this.getUserAgent(),
-      webdriver: this.getWebdriver(),
-      has_window_chrome: this.hasWindowChrome(),
-    };
+  /**
+   * Return true if attempt to ask for permission leads to inconsistent result
+   */
+  checkPermissions(): Promise<boolean> {
+    // TODO: see how this function behaves on browsers which don't support used features
+
+    return navigator.permissions.query({name: 'notifications'})
+      .then(function(permissionStatus: PermissionStatus) {
+        return Notification.permission === 'denied' && permissionStatus.state === 'prompt';
+      });
+  }
+
+  collect(): Promise<ClientProperties> {
+    return this.checkPermissions()
+      .then(function(inconsistent_permissions: boolean) {
+        return {
+          inconsistent_permissions: inconsistent_permissions,
+          languages: this.getLanguages(),
+          plugins: this.getPlugins(),
+          custom_window: this.getWindowCustomProperties(),
+          ua: this.getUserAgent(),
+          webdriver: this.getWebdriver(),
+          has_window_chrome: this.hasWindowChrome(),
+        };
+      }.bind(this));
   }
 }
 
