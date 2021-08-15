@@ -2,7 +2,7 @@
 
 # Local dev environment
 install:
-	npm install
+	npm ci
 
 lint:
 	npm run-script lint
