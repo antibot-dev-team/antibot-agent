@@ -107,10 +107,13 @@ class Properties {
    * Return true if attempt to ask for permission leads to inconsistent result
    */
   checkPermissions(): Promise<boolean> {
-    // TODO: see how this function behaves on browsers which don't support used features
-
-    return navigator.permissions.query({name: 'notifications'})
-      .then(permissionStatus => Notification.permission !== 'denied' || permissionStatus.state !== 'prompt');
+    try {
+      return navigator.permissions.query({name: 'notifications'})
+        .then(permissionStatus => Notification.permission !== 'denied' || permissionStatus.state !== 'prompt');
+    } catch (e) {
+      // On browsers which don't support navigator.permission we suppose than permissions are consistent.
+      return Promise.resolve(true);
+    }
   }
 
   async collect(): Promise<ClientProperties> {
