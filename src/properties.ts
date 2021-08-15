@@ -111,7 +111,7 @@ class Properties {
       return navigator.permissions.query({name: 'notifications'})
         .then(permissionStatus => Notification.permission !== 'denied' || permissionStatus.state !== 'prompt');
     } catch (e) {
-      // On browsers which don't support navigator.permission we suppose than permissions are consistent.
+      // On browsers which don't support navigator.permission we suppose that permissions are consistent.
       return Promise.resolve(true);
     }
   }
