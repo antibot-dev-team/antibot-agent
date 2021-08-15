@@ -5,7 +5,7 @@ export type ClientProperties = {
   ua: string
   webdriver: boolean
   has_window_chrome: boolean
-  inconsistent_permissions: boolean
+  consistent_permissions: boolean
   // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
@@ -110,24 +110,19 @@ class Properties {
     // TODO: see how this function behaves on browsers which don't support used features
 
     return navigator.permissions.query({name: 'notifications'})
-      .then(function(permissionStatus: PermissionStatus) {
-        return Notification.permission === 'denied' && permissionStatus.state === 'prompt';
-      });
+      .then(permissionStatus => Notification.permission !== 'denied' || permissionStatus.state !== 'prompt');
   }
 
-  collect(): Promise<ClientProperties> {
-    return this.checkPermissions()
-      .then(function(inconsistent_permissions: boolean) {
-        return {
-          inconsistent_permissions: inconsistent_permissions,
-          languages: this.getLanguages(),
-          plugins: this.getPlugins(),
-          custom_window: this.getWindowCustomProperties(),
-          ua: this.getUserAgent(),
-          webdriver: this.getWebdriver(),
-          has_window_chrome: this.hasWindowChrome(),
-        };
-      }.bind(this));
+  async collect(): Promise<ClientProperties> {
+    return {
+      consistent_permissions: await this.checkPermissions(),
+      languages: this.getLanguages(),
+      plugins: this.getPlugins(),
+      custom_window: this.getWindowCustomProperties(),
+      ua: this.getUserAgent(),
+      webdriver: this.getWebdriver(),
+      has_window_chrome: this.hasWindowChrome(),
+    };
   }
 }
 
