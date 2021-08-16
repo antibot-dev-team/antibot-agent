@@ -66,12 +66,8 @@ class Agent {
         };
       })
       .then(options => fetch(Endpoints.analyze, options)
-        .then(function (response: Response) {
-          return response.json();
-        }.bind(this))
-        .then(function (response: AnalyzeResponse) {
-          this.handleResponse(response);
-        }.bind(this))
+        .then(response => response.json())
+        .then(response => this.handleResponse(response))
       );
   }
 
