@@ -56,15 +56,13 @@ class Agent {
    */
   sendData(): void {
     this.prepareRequestBody()
-      .then(body => {
-        return {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-      })
+      .then(body => ({
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }))
       .then(options => fetch(Endpoints.analyze, options)
         .then(response => response.json())
         .then(response => this.handleResponse(response))
