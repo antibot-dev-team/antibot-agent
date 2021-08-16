@@ -5,6 +5,7 @@ export type ClientProperties = {
   ua: string
   webdriver: boolean
   has_window_chrome: boolean
+  consistent_permissions: boolean
   // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
@@ -87,7 +88,7 @@ class Properties {
   getUserAgent(): string {
     return navigator.userAgent;
   }
-    
+
   /**
    * Return value of webdriver property.
    */
@@ -102,8 +103,22 @@ class Properties {
     return window.hasOwnProperty('chrome');
   }
 
-  collect(): ClientProperties {
+  /**
+   * Return true if attempt to ask for permission leads to inconsistent result
+   */
+  checkPermissions(): Promise<boolean> {
+    try {
+      return navigator.permissions.query({name: 'notifications'})
+        .then(permissionStatus => Notification.permission !== 'denied' || permissionStatus.state !== 'prompt');
+    } catch (e) {
+      // On browsers which don't support navigator.permission we suppose that permissions are consistent.
+      return Promise.resolve(true);
+    }
+  }
+
+  async collect(): Promise<ClientProperties> {
     return {
+      consistent_permissions: await this.checkPermissions(),
       languages: this.getLanguages(),
       plugins: this.getPlugins(),
       custom_window: this.getWindowCustomProperties(),
