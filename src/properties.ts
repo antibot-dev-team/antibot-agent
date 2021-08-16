@@ -104,7 +104,7 @@ class Properties {
   }
 
   /**
-   * Return true if attempt to ask for permission leads to inconsistent result
+   * Return false if attempt to ask for permission leads to inconsistent result.
    */
   checkPermissions(): Promise<boolean> {
     try {
