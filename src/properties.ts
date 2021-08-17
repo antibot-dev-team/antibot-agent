@@ -6,6 +6,8 @@ export type ClientProperties = {
   webdriver: boolean
   has_window_chrome: boolean
   consistent_permissions: boolean
+  eval_length: number
+  product_sub: string
   // TODO: Add more checks: window size, navigator properties, etc. ...
 }
 
@@ -116,6 +118,20 @@ class Properties {
     }
   }
 
+  /**
+   * Return length of eval source code.
+   */
+  getEvalLength(): number {
+    return eval.toString().length;
+  }
+
+  /**
+   * Return value of navigator.productSub
+   */
+  getProductSub(): string {
+    return navigator.productSub;
+  }
+
   async collect(): Promise<ClientProperties> {
     return {
       consistent_permissions: await this.checkPermissions(),
@@ -125,6 +141,8 @@ class Properties {
       ua: this.getUserAgent(),
       webdriver: this.getWebdriver(),
       has_window_chrome: this.hasWindowChrome(),
+      eval_length: this.getEvalLength(),
+      product_sub: this.getProductSub()
     };
   }
 }
